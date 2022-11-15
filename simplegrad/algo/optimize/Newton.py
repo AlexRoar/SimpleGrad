@@ -2,14 +2,22 @@ from .BaseOptimiser import BaseOptimizer
 
 
 class Newton(BaseOptimizer):
-    def __init__(self, model, variables):
+    def __init__(self, model=None, variables=None):
         self._model = model
-
         assert len(variables) > 0, "No variables to optimize"
         self._modelGrad = dict()
-        self._variables = variables
-        for var in variables:
-            self._modelGrad[var._id] = model.gradientGraph(by=var)
+        if variables is not None:
+            self.setVariables(variables)
+
+
+    def setModel(self, model):
+        self._model = model
+        self.setVariables(self._variables)
+
+    def setVariables(self, vars):
+        self._variables = vars
+        for var in vars:
+            self._modelGrad[var._id] = self._model.gradientGraph(by=var)
 
     def step(self):
         self._model.zeroGrad()

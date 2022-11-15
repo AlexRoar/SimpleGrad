@@ -9,6 +9,7 @@ class Value(Graph):
         self._value = value
         self._shape = value.shape
         self._checkRequiresGrad()
+        self._frwd = self._value
 
     def forward(self) -> np.ndarray:
         self._frwd = self._value
@@ -25,3 +26,8 @@ class Value(Graph):
 
     def __copy__(self):
         return Value(self._value)
+
+    def _dot_description(self):
+        if self.shape != (1, 1):
+            return type(self).__name__ + f"\n{self.shape}"
+        return type(self).__name__ + f"\n<{self.value[0, 0]}>"

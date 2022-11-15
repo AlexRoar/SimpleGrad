@@ -4,14 +4,21 @@ from .BaseOptimiser import BaseOptimizer
 
 
 class RMSProp(BaseOptimizer):
-    def __init__(self, model, variables: list, lr=1e-2, betta=0.99, eps=1e-6):
+    def __init__(self, model=None, variables: list=None, lr=1e-2, betta=0.99, eps=1e-6):
         self._betta = betta
         self._lr = lr
         self._eps = eps
         self._model = model
         self._s: dict[Any, np.ndarray | None] = dict()
-        self._variables = variables
-        for var in variables:
+        if variables is not None:
+            self.setVariables(variables)
+
+    def setModel(self, model):
+        self._model = model
+
+    def setVariables(self, vars):
+        self._variables = vars
+        for var in vars:
             self._s[var._id] = None
 
     def step(self):

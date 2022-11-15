@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import uuid
+import graphviz
 
 
 class GraphBase(ABC):
@@ -51,7 +52,7 @@ class GraphBase(ABC):
         for v in reversed(topo):
             v._backward()
 
-    def topoSorted(self):
+    def topoSorted(self) -> list:
         topo = []
         visited = set()
 
@@ -128,3 +129,20 @@ class GraphBase(ABC):
     @abstractmethod
     def _graphCopy(self):
         pass
+
+    def _dot_name(self):
+        return f"node{self._id}"
+
+    def _dot_description(self):
+        return type(self).__name__ + f"\n{self.shape}"
+
+    def to_dot(self) -> graphviz.Digraph:
+        graph = graphviz.Digraph()
+
+        for node in self.topoSorted():
+            graph.node(self._dot_name(), label=self._dot_description())
+            for child in node._children:
+                graph.node(child._dot_name(), label=child._dot_description())
+                graph.edge(child._dot_name(), node._dot_name())
+
+        return graph

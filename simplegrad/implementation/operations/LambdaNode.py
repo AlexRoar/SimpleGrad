@@ -5,7 +5,7 @@ import numpy as np
 
 
 class LambdaNode(Graph):
-    def __init__(self, value: Graph, forward, backward, differentiate=None):
+    def __init__(self, value: Graph, forward, backward, differentiate=None, name=None):
         """
 
         :param value: Graph value
@@ -23,6 +23,7 @@ class LambdaNode(Graph):
         self._backwardLambda = backward
         self._shape = forward(np.ones(value.shape)).shape
         self._differentiate = differentiate
+        self._name = name
         self._checkRequiresGrad()
 
     def forward(self) -> np.ndarray:
@@ -48,7 +49,8 @@ class LambdaNode(Graph):
         return LambdaNode(deepcopy(self._children[0]),
                           self._forwardLambda,
                           self._backwardLambda,
-                          self._differentiate
+                          self._differentiate,
+                          name=self._name
                           )
 
     def _graphCopy(self):
@@ -56,5 +58,12 @@ class LambdaNode(Graph):
             value=self._children[0]._graphCopy(),
             forward=self._forwardLambda,
             backward=self._backwardLambda,
-            differentiate=self._differentiate
+            differentiate=self._differentiate,
+            name=self._name
         )
+
+    def _dot_description(self):
+        name = type(self).__name__
+        if self._name is not None:
+            name = self._name
+        return name + f"\n{self.shape}"

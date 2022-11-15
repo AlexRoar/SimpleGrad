@@ -40,7 +40,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return LambdaNode(self,
                           lambda x: x.T,
                           back,
-                          differentiate=diff)
+                          differentiate=diff,
+                        name="Transpose")
 
     def sum(self, axis=None) -> Graph:
         from simplegrad.implementation.operations.LambdaNode import LambdaNode
@@ -54,7 +55,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return LambdaNode(self,
                           lambda x: np.sum(x, axis=axis, keepdims=True),
                           back,
-                          differentiate=diff)
+                          differentiate=diff,
+                        name="Sum")
 
     def exp(self) -> Graph:
         from simplegrad.implementation.operations.LambdaNode import LambdaNode
@@ -68,7 +70,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return LambdaNode(self,
                           lambda x: np.exp(x),
                           back,
-                          differentiate=diff)
+                          differentiate=diff,
+                        name="Expon")
 
     def expSubMax(self, axis=-1) -> Graph:
         from simplegrad.implementation.operations.LambdaNode import LambdaNode
@@ -82,7 +85,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return LambdaNode(self,
                           lambda x: np.exp(x - np.max(x, axis=axis, keepdims=True)),
                           back,
-                          differentiate=diff)
+                          differentiate=diff,
+                        name="ExponSubMaximum")
 
     def ln(self) -> Graph:
         from simplegrad.implementation.operations.LambdaNode import LambdaNode
@@ -96,7 +100,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return LambdaNode(self,
                           lambda x: np.log(x),
                           back,
-                          differentiate=diff)
+                          differentiate=diff,
+                        name="Ln")
 
     def abs(self) -> Graph:
         from simplegrad.implementation.operations.LambdaNode import LambdaNode
@@ -110,7 +115,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return LambdaNode(self,
                           lambda x: np.abs(x),
                           back,
-                          differentiate=diff)
+                          differentiate=diff,
+                        name="Abs")
 
     def relu(self) -> Graph:
         return (self > 0) * self
@@ -162,7 +168,8 @@ class Graph(GraphBase, metaclass=ABCMeta):
             self,
             lambda x: np.broadcast_to(x, shape=shape),
             back,
-            differentiate=diff
+            differentiate=diff,
+                        name="Broadcast"
         )
 
     def _tryBroadcast(self, shape) -> Graph | None:

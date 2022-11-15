@@ -4,14 +4,16 @@ from .BaseOptimiser import BaseOptimizer
 
 
 class Momentum(BaseOptimizer):
-    def __init__(self, model, variables: list, lr=1e-2, betta=0.9):
+    def __init__(self, model=None, variables: list=None, lr=1e-2, betta=0.9):
         self._betta = betta
         self._lr = lr
         self._model = model
         self._s: dict[Any, np.ndarray | None] = dict()
-        self._variables = variables
-        for var in variables:
-            self._s[var._id] = None
+        if variables is not None:
+            self.setVariables(variables)
+
+    def setModel(self, model):
+        self._model = model
 
     def step(self):
         self._model.zeroGrad()
@@ -24,6 +26,11 @@ class Momentum(BaseOptimizer):
             momentum = self._betta * self._s[var._id] + (1 - self._betta) * grad
             var.value -= self._lr * momentum
             self._s[var._id] = momentum
+
+    def setVariables(self, vars):
+        self._variables = vars
+        for var in vars:
+            self._s[var._id] = None
 
     @property
     def lr(self):

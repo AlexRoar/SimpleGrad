@@ -4,7 +4,7 @@ from .BaseOptimiser import BaseOptimizer
 
 
 class Adam(BaseOptimizer):
-    def __init__(self, model, variables: list, lr=1e-2, betta1=0.9, betta2=0.99, eps=1e-8):
+    def __init__(self, model=None, variables: list=None, lr=1e-2, betta1=0.9, betta2=0.99, eps=1e-8):
         self._betta1 = betta1
         self._betta2 = betta2
         self._lr = lr
@@ -12,10 +12,8 @@ class Adam(BaseOptimizer):
         self._model = model
         self._m: dict[Any, np.ndarray | None] = dict()
         self._v: dict[Any, np.ndarray | None] = dict()
-        self._variables = variables
-        for var in variables:
-            self._m[var._id] = None
-            self._v[var._id] = None
+        if variables is not None:
+            self.setVariables(variables)
 
     def step(self):
         self._model.zeroGrad()
@@ -32,6 +30,15 @@ class Adam(BaseOptimizer):
             var.value -= self._lr * d
             self._m[var._id] = newm
             self._v[var._id] = newv
+
+    def setModel(self, model):
+        self._model = model
+
+    def setVariables(self, vars):
+        self._variables = vars
+        for var in vars:
+            self._m[var._id] = None
+            self._v[var._id] = None
 
     @property
     def lr(self):
