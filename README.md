@@ -54,3 +54,21 @@ model.fit(
 pred = np.argmax(model.predict(X_test), axis=-1)
 accuracy_score(np.argmax(y_test, axis=-1), pred)
 ```
+
+## Rosenbrook function optimization
+
+```python
+import simplegrad as sg
+import simplegrad.algo.optimize as sgo
+
+def rosenbrockFunction(x, y):
+    a, b = 1, 100
+    return (a - x) ** 2 + b * (y - (x ** 2)) ** 2
+
+x0, y0 = -0.3, 2.2
+x, y = sg.Variable(x0), sg.Variable(y0)
+f = rosenbrockFunction(x, y)
+optimizer = sgo.Adam(model=f, variables=[x, y], lr=1e-4)
+for i in range(70000):
+    optimizer.step()
+```
