@@ -52,7 +52,7 @@ class GraphBase(ABC):
         for v in reversed(topo):
             v._backward()
 
-    def topoSorted(self) -> list:
+    def topoSorted(self, onlygrad=True) -> list:
         topo = []
         visited = set()
 
@@ -61,7 +61,7 @@ class GraphBase(ABC):
                 visited.add(v.id)
                 for child in v._children:
                     build_topo(child)
-                if v._requires_grad:
+                if v._requires_grad or not onlygrad:
                     topo.append(v)
 
         build_topo(self)
@@ -139,8 +139,8 @@ class GraphBase(ABC):
     def to_dot(self) -> graphviz.Digraph:
         graph = graphviz.Digraph()
 
-        for node in self.topoSorted():
-            graph.node(self._dot_name(), label=self._dot_description())
+        for node in self.topoSorted(onlygrad=False):
+            graph.node(node._dot_name(), label=node._dot_description())
             for child in node._children:
                 graph.node(child._dot_name(), label=child._dot_description())
                 graph.edge(child._dot_name(), node._dot_name())

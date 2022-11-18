@@ -125,7 +125,23 @@ class Graph(GraphBase, metaclass=ABCMeta):
         return (self > 0) * self + (self <= 0) * alpha * (self.exp() - 1)
 
     def sigmoid(self) -> Graph:
-        return (1 / (1 + (self * -1).exp()))
+        from simplegrad.implementation.operations.LambdaNode import LambdaNode
+
+        def safeSigmoid(x):
+            below = np.exp(-(x * (x >= 0)))
+            above = np.exp((x * (x < 0)))
+            return (above / (1 + above)) * (x < 0) + (1 / (1 + below)) * (x >= 0)
+        def back(grad, frwd, input):
+            return grad * frwd * (1 - frwd)
+
+        def diff(input, by):
+            return input.gradientGraph(by=by) * input.sigmoid() * (1 - input.sigmoid())
+
+        return LambdaNode(self,
+                          safeSigmoid,
+                          back,
+                          differentiate=diff,
+                          name="Sigmoid")
 
     def tanh(self) -> Graph:
         x = self

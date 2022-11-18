@@ -4,9 +4,6 @@ from .BaseOptimiser import BaseOptimizer
 class GD(BaseOptimizer):
     def __init__(self, model=None, variables: list=[], lr=1e-2):
         self._model = model
-
-        assert len(variables) > 0, "No variables to optimize"
-
         self.setVariables(variables)
         self._lr = lr
 
@@ -16,6 +13,8 @@ class GD(BaseOptimizer):
     def step(self):
         self._model.zeroGrad()
         self._model.calcGrad()
+
+        assert len(self._variables) > 0, "No variables to optimize"
 
         for var in self._variables:
             var.value -= self._lr * var.grad
