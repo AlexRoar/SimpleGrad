@@ -26,6 +26,7 @@ class Model:
         for layer in self._layers:
             vars += list(layer.getTrainable())
 
+        self._graph = graph
         optimizer.setModel(graph)
         optimizer.setVariables(vars)
 
