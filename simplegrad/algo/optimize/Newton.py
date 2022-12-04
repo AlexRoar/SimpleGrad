@@ -1,4 +1,5 @@
 from .BaseOptimiser import BaseOptimizer
+import numpy as np
 
 
 class Newton(BaseOptimizer):
@@ -17,18 +18,24 @@ class Newton(BaseOptimizer):
     def setVariables(self, vars):
         self._variables = vars
         for var in vars:
+            assert var.shape == (1, 1), "Only 0D vars are supported in Newton method"
             self._modelGrad[var._id] = self._model.gradientGraph(by=var)
 
     def step(self):
         self._model.zeroGrad()
         self._model.calcGrad()
+        grads = np.array([var.grad[0,0] for var in self._variables])
+        hess = []
         for var in self._variables:
-            firstGrad = var.grad
             gradModel = self._modelGrad[var._id]
             gradModel.zeroGrad()
             gradModel.calcGrad()
-            secondGrad = var.grad
-            var.value -= firstGrad / secondGrad
+            varhess = [var2.grad[0,0] for var2 in self._variables]
+            hess.append(varhess)
+        hess = np.array(hess)
+        steps = np.linalg.inv(hess) @ grads
+        for i, var in enumerate(self._variables):
+            var.value -= steps[i]
 
     @property
     def lr(self):
