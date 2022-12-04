@@ -27,7 +27,10 @@ class Value(Graph):
     def __copy__(self):
         return Value(self._value)
 
-    def _dot_description(self):
+    def _dot_description(self, show_grad_values):
+        values = ""
+        if show_grad_values:
+            values += "\n" + self._gradString()
         if self.shape != (1, 1):
-            return type(self).__name__ + f"\n{self.shape}"
-        return type(self).__name__ + f"\n<{self.value[0, 0]}>"
+            return type(self).__name__ + f"\n{self.shape}" + values
+        return type(self).__name__ + f"\n<{self.value[0, 0]}>" + values

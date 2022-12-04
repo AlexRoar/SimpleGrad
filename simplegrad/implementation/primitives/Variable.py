@@ -33,7 +33,10 @@ class Variable(Value):
     def _graphCopy(self):
         return self
 
-    def _dot_description(self):
+    def _dot_description(self, show_grad_values):
+        values = ""
+        if show_grad_values:
+            values += "\n" + self._gradString()
         if self.shape == (1, 1):
-            return type(self).__name__ + f"\n<{self.defined_name}>"
-        return type(self).__name__ + f"\n<{self.defined_name}>\n{self.shape}"
+            return type(self).__name__ + f"\n<{self.defined_name}>" + values
+        return type(self).__name__ + f"\n<{self.defined_name}>\n{self.shape}" + values

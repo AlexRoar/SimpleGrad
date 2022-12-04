@@ -62,8 +62,12 @@ class LambdaNode(Graph):
             name=self._name
         )
 
-    def _dot_description(self):
+    def _dot_description(self, show_grad_values):
         name = type(self).__name__
         if self._name is not None:
             name = self._name
-        return name + f"\n{self.shape}"
+
+        values = ""
+        if show_grad_values:
+            values += "\n" + self._gradString()
+        return name + f"\n{self.shape}" + values

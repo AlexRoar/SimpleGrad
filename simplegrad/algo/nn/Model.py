@@ -61,7 +61,6 @@ class Model:
         elif loss == "crossentropy":
             def crossentropy(y_true, y_pred):
                 return (-1 * (y_pred + 1e-8).ln() * y_true).sum()
-
             loss = crossentropy
         return loss
 
